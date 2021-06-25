@@ -19,12 +19,6 @@
     /* create timeline */
     var timeline = [];
 
-    /* preload images */
-    // var preload = {
-    //   type: 'preload',
-    //   images: ['img/blue.png', 'img/orange.png']
-    // }
-    // timeline.push(preload);
 
     /* define welcome message trial */
     var welcome = {
@@ -88,19 +82,7 @@
       },
       on_finish: function(){
         algoRating = jsPsych.randomization.sampleWithoutReplacement(numberLikertScale, 1);
-=======
 
-    var algoEval = {
-      type: "html-keyboard-response",
-      stimulus: function(){
-        return "The algorithm determined you are <br/><h2>" + jsPsych.randomization.sampleWithoutReplacement(numberLikertScale, 1) + " out of " +  Math.max.apply(null, numberLikertScale) + " " + jsPsych.timelineVariable('word') + "</h2>";
-      },
-      post_trial_gap: 200,
-      word: jsPsych.timelineVariable('word'),
-      save_trial_parameters: {
-        stimulus: true,
-        word: true
->>>>>>> 7f3112521c0baca59d14fc29ac286f223cbf18c7
       }
     };
 
