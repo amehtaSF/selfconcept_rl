@@ -1,163 +1,202 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Personality algorithm training task</title>
-    <script src="../lib/jspsych-6.3.1/jspsych.js"></script>
-    <script src="../lib/jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js"></script>
-    <script src="../lib/jspsych-6.3.1/plugins/jspsych-image-keyboard-response.js"></script>
-    <script src="../lib/jspsych-6.3.1/plugins/jspsych-survey-likert.js"></script>
-    <script src="../lib/jspsych-6.3.1/plugins/jspsych-preload.js"></script>
-    <link href="../lib/jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css">
-  </head>
-  <body></body>
+<head>
+  <title>Personality algorithm training task</title>
+  <script src="../lib/jspsych-6.3.1/jspsych.js"></script>
+  <script src="../lib/jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js"></script>
+  <script src="../lib/jspsych-6.3.1/plugins/jspsych-html-button-response.js"></script>
+  <script src="../lib/jspsych-6.3.1/plugins/jspsych-image-keyboard-response.js"></script>
+  <script src="../lib/jspsych-6.3.1/plugins/jspsych-instructions.js"></script>
+  <script src="../lib/jspsych-6.3.1/plugins/jspsych-survey-likert.js"></script>
+  <script src="../lib/jspsych-6.3.1/plugins/jspsych-preload.js"></script>
+  <link href="../lib/jspsych-6.3.1/css/jspsych.css" rel="stylesheet" type="text/css">
+</head>
+<body></body>
 
-  <!-- Import var traits -->
-  <script type="text/javascript" src="js/trait_words.js"></script> 
+<!-- Import trait words as a variable called "traits" -->
+<script type="text/javascript" src="js/trait_words.js"></script> 
 
-  <script>
+<script>
+
+
+
+    jsPsych.data.addProperties({pid: jsPsych.data.getURLVariable("pid")});
+    jsPsych.data.addProperties({session: jsPsych.data.getURLVariable("s")});
+
+    var traits;
+    switch(jsPsych.data.getURLVariable("s")) {
+      case "1":
+      traits = traits1
+      break;
+      case "2":
+      traits = traits2
+      break;
+      case "3":
+      traits = traits3
+      break;
+      default:
+      throw 'traits not found';
+    }
+
+    var n_trials = traits.length
 
     /* create timeline */
     var timeline = [];
 
 
-    /* define welcome message trial */
-    var welcome = {
-      type: "html-keyboard-response",
-      stimulus: "Welcome to the experiment. Press any key to begin."
-    };
-    timeline.push(welcome);
-
-    /* define instructions trial */
+    /* define instructions trials */
     var instructions = {
-      type: "html-keyboard-response",
-      stimulus: `In this experiment, you will do stuff.`,
-      post_trial_gap: 200
-    };
+      type: 'instructions',
+      pages: [
+      `<p>Now we will start part two of the study. <p>You can use the right and left arrow keys to navigate forward and back.</p>`,
+
+      `<p>In this part of the study, we are training an artifical intelligence (AI) algorithm to be sensitive to humans' (1) personalities and (2) emotions. This algorithm will be useful, for example, in providing more kind, effective, and empathetic AI-assisted medical care to patients in care facilities. </p>`,
+
+      `<h2>Personality algorithm</h2>
+
+      <p>The personality algorithm we designed can judge personality traits with a high degree of accuracy (87.34% accuracy on average).</p> `,
+
+      `<h2>Personality algorithm</h2>
+
+      <p>This algorithm has generated predictions of your personality based on the surveys you previously filled out. In this part of the study, we would like to measure the match between the algorithm's judgement of your personality and your own judgement of your personality.</p>`,
+
+      `<h2>Personality algorithm</h2>
+
+      <p>In this task, we will tell you how the algorithm rated your personality on several personality traits and we will ask you to rate your own personality on each trait.</p> `,
+
+      `<h2>Emotion algorithm</h2>
+
+      We are currently also training an algorithm which to predict people's emotions.`,
+
+      `<h2>Emotion algorithm</h2>
+
+      <p>Since the emotion algorithm is not fully developed, we will not be providing you with its predictions. However, we will ask you throughout the study to rate how good or bad you are feeling.</p>`
+      ],
+      show_clickable_nav: true
+    }
     timeline.push(instructions);
 
 
-    var fixation = {
-      type: 'html-keyboard-response',
-      stimulus: '<div style="font-size:60px;">+</div>',
-      choices: jsPsych.NO_KEYS,
-      trial_duration: function(){
-        return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
-      },
-      data: {
-        task: 'fixation'
+      var numberLikertScale = [1,2,3,4,5,6,7];
+      var numberLikertScaleStr = numberLikertScale.map(String)
+
+      // "Rate your self on this trait..."
+      // var selfEval = {
+      //   type: "survey-likert",
+      //   questions: [
+      //   {prompt: function(){
+      //     return "<h2>" + jsPsych.timelineVariable('word') + "</h2>How much do you think this word describes you on a scale of " + Math.min.apply(null, numberLikertScale) + " (not " + jsPsych.timelineVariable('word') + " at all) to " + Math.max.apply(null, numberLikertScale) + " (extremely " + jsPsych.timelineVariable('word') + ")? ";
+      //   }, 
+      //   name: "selfEval",
+      //   labels: numberLikertScale}
+      //   ],
+      //   word: jsPsych.timelineVariable('word'),
+      //   valence: jsPsych.timelineVariable('valence'),
+      //   save_trial_parameters: {
+      //     word: true,
+      //     valence: true
+      //   }
+      // }
+
+      // Button response
+      var selfEval = {
+        type: 'html-button-response',
+        choices: numberLikertScale,
+        stimulus: function(){
+          return "<h2>" + jsPsych.timelineVariable('word') + "</h2><p>How much do you think this word describes you on a scale of " + Math.min.apply(null, numberLikertScale) + " (not " + jsPsych.timelineVariable('word') + " at all) to " + Math.max.apply(null, numberLikertScale) + " (extremely " + jsPsych.timelineVariable('word') + ")?</p> ";
+        },
+      };
+
+      // keyboard response
+      // var selfEval = {
+      //   type: 'html-keyboard-response',
+      //   stimulus: function(){
+      //     return "<h2>" + jsPsych.timelineVariable('word') + "</h2><p>How much do you think this word describes you on a scale of " + Math.min.apply(null, numberLikertScale) + " (not " + jsPsych.timelineVariable('word') + " at all) to " + Math.max.apply(null, numberLikertScale) + " (extremely " + jsPsych.timelineVariable('word') + ")?</p> ";
+      //   },
+      //   choices: numberLikertScaleStr
+      // };
+
+      // declare global algoRating that changes with each trial
+      var algoRating = jsPsych.randomization.sampleWithoutReplacement(numberLikertScale, 1);
+
+      // "Algorithm rates you..."
+      var algoEval = {
+        type: "html-keyboard-response",
+        stimulus: function(){
+          return "The algorithm determined you are <br/><h2>" + algoRating + " out of " +  Math.max.apply(null, numberLikertScale) + " " + jsPsych.timelineVariable('word') + "</h2>";
+        },
+        algoRating: algoRating,
+        word: jsPsych.timelineVariable('word'),
+        valence: jsPsych.timelineVariable('valence'),
+        save_trial_parameters: {
+          algoRating: true,
+          stimulus: true,
+          word: true,
+          valence: true
+        },
+        on_finish: function(){
+          algoRating = jsPsych.randomization.sampleWithoutReplacement(numberLikertScale, 1);
+
+        }
+      };
+
+
+      var goodBadLikertScale = [
+      "Very bad",
+      "Moderately bad",
+      "Slightly bad",
+      "Neutral", 
+      "Slightly good", 
+      "Moderately good",
+      "Very good"
+      ];
+
+      // "How do you feel..."
+      var selfFeeling = {
+        type: "html-button-response",
+        stimulus: "<p>How do you feel about yourself?</p>", 
+        choices: goodBadLikertScale,
+        word: jsPsych.timelineVariable('word'),
+        save_trial_parameters: {
+          word: true
+        },
+        on_finish: function() {
+          var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
+          jsPsych.setProgressBar(curr_progress_bar_value + (1/n_trials));
+        }
       }
-    }
 
-    var numberLikertScale = [1,2,3,4,5,6,7];
+      // var algoFeeling = {
+      //   type: "survey-likert",
+      //   questions: [
+      //   {prompt: function(){
+      //     return "How do you feel about the algorithm?";
+      //   }, 
+      //   labels: goodBadLikertScale}
+      //   ],
+      //   word: jsPsych.timelineVariable('word'),
+      //   save_trial_parameters: {
+      //     word: true
+      //   }
+      // }
 
-    var selfEval = {
-      type: "survey-likert",
-      questions: [
-      {prompt: function(){
-        return "<h2>" + jsPsych.timelineVariable('word') + "</h2>How much do you think this word describes you on a scale of " + Math.min.apply(null, numberLikertScale) + " (not " + jsPsych.timelineVariable('word')+ " at all) to " + Math.max.apply(null, numberLikertScale) + " (extremely " + jsPsych.timelineVariable('word') + ")? ";
-      }, 
-      name: "selfEval",
-      labels: numberLikertScale}
-      ],
-      word: jsPsych.timelineVariable('word'),
-      save_trial_parameters: {
-        word: true
+      var test_procedure = {
+        timeline: [selfEval, algoEval, selfFeeling],
+        timeline_variables: traits,
+        repetitions: 1,
+        randomize_order: true
       }
-    }
-
-    // declare global algoRating that changes with each trial
-    var algoRating = jsPsych.randomization.sampleWithoutReplacement(numberLikertScale, 1);
-    var algoEval = {
-      type: "html-keyboard-response",
-      stimulus: function(){
-        return "The algorithm determined you are <br/><h2>" + algoRating + " out of " +  Math.max.apply(null, numberLikertScale) + " " + jsPsych.timelineVariable('word') + "</h2>";
-      },
-      algoRating: algoRating,
-      post_trial_gap: 200,
-      word: jsPsych.timelineVariable('word'),
-      save_trial_parameters: {
-        algoRating: true,
-        stimulus: true,
-        word: true
-      },
-      on_finish: function(){
-        algoRating = jsPsych.randomization.sampleWithoutReplacement(numberLikertScale, 1);
-
-      }
-    };
-
-    var goodBadLikertScale = [
-    "Very bad",
-    "Moderately bad",
-    "Slightly bad",
-    "Neutral", 
-    "Slightly good", 
-    "Moderately good",
-    "Very good"
-    ];
-
-    var selfFeeling = {
-      type: "survey-likert",
-      questions: [
-      {prompt: function(){
-        return "How do you feel about yourself?";
-      }, 
-      labels: goodBadLikertScale}
-      ],
-      word: jsPsych.timelineVariable('word'),
-      save_trial_parameters: {
-        word: true
-      }
-    }
-
-    var algoFeeling = {
-      type: "survey-likert",
-      questions: [
-      {prompt: function(){
-        return "How do you feel about the algorithm?";
-      }, 
-      labels: goodBadLikertScale}
-      ],
-      word: jsPsych.timelineVariable('word'),
-      save_trial_parameters: {
-        word: true
-      }
-    }
-
-    var test_procedure = {
-      timeline: [selfEval, algoEval, selfFeeling],
-      timeline_variables: traits,
-      repetitions: 1,
-      randomize_order: true
-    }
-    timeline.push(test_procedure);
+      timeline.push(test_procedure);
 
 
-    /* define debrief */
-
-    // var debrief_block = {
-    //   type: "html-keyboard-response",
-    //   stimulus: function() {
-
-    //     var trials = jsPsych.data.get().filter({task: 'response'});
-    //     var correct_trials = trials.filter({correct: true});
-    //     var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
-    //     var rt = Math.round(correct_trials.select('rt').mean());
-
-    //     return `<p>You responded correctly on ${accuracy}% of the trials.</p>
-    //       <p>Your average response time was ${rt}ms.</p>
-    //       <p>Press any key to complete the experiment. Thank you!</p>`;
-
-    //   }
-    // };
-    // timeline.push(debrief_block);
-
-    /* start the experiment */
-    jsPsych.init({
-      timeline: timeline,
-      on_finish: function() {
-        jsPsych.data.displayData();
-      }
-    });
+      /* start the experiment */
+      jsPsych.init({
+        timeline: timeline,
+        show_progress_bar: true,
+        auto_update_progress_bar: false,
+        on_finish: function() {
+          jsPsych.data.displayData();
+        }
+      });
   </script>
-</html>
+  </html>
