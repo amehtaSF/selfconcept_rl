@@ -22,7 +22,8 @@
 
 
   jsPsych.data.addProperties({pid: jsPsych.data.getURLVariable("pid")});
-  jsPsych.data.addProperties({session: jsPsych.data.getURLVariable("s")});
+  jsPsych.data.addProperties({s: jsPsych.data.getURLVariable("s")});
+  jsPsych.data.addProperties({s: jsPsych.data.getURLVariable("pool")});
 
   var traits;
   switch(jsPsych.data.getURLVariable("s")) {
@@ -61,7 +62,7 @@
 
         `<p>In the previous part of the study, you took a series of validated personality assessments. In this part of the study, we are interested in how people accurate people are at knowing their personality and how they feel when they receive their personality assessment results.</p>`,
 
-        `<p>Each trial will consist of three parts.<br/><br/>First, you will be presented with a personality trait on which you will rate your perception of your own personality.<br/>Next, you will then be provided with the result from the personality quiz.<br/>Finally, you will be asked how you are feeling about yourself in general.</p>`,
+        `<p>Each trial will consist of three parts.<br/><br/>First, you will be presented with a personality trait on which you will rate your perception of your own personality.<br/>Next, you will then be provided with the result from the personality quiz.<br/>Finally, you will be asked how you are feeling about yourself in that moment.</p>`,
 
         `Press next to begin this part of the study.`
 
@@ -235,7 +236,18 @@
         show_progress_bar: true,
         auto_update_progress_bar: false,
         on_finish: function() {
-          jsPsych.data.displayData();
+          var redirect_url = "https://stanforduniversity.qualtrics.com/jfe/form/SV_cXS7tvf2k71W1Ui?pid=" + 
+          jsPsych.data.getURLVariable("pid") + 
+          "&pool=" +
+          jsPsych.data.getURLVariable("pool") + 
+          "&s=" +
+          jsPsych.data.getURLVariable("s");
+          var message = "You will now be redirected to the next phase of the study.<br/>If you are not redirected, please click <a href='" + redirect_url + "'>this link</a> to continue.";
+          var display_element = jsPsych.getDisplayElement();
+          display_element.innerHTML = '<pre id="jspsych-redirect-display"></pre>';
+          document.getElementById('jspsych-redirect-display').textContent = message;
+          window.location.replace(redirect_url)
+          // jsPsych.data.displayData();
         }
       });
     </script>
