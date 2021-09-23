@@ -22,23 +22,36 @@
 
 
   jsPsych.data.addProperties({pid: jsPsych.data.getURLVariable("pid")});
-  jsPsych.data.addProperties({s: jsPsych.data.getURLVariable("s")});
-  jsPsych.data.addProperties({s: jsPsych.data.getURLVariable("pool")});
+  jsPsych.data.addProperties({s: jsPsych.data.getURLVariable("s")}); // refers to the set of traits used
+  jsPsych.data.addProperties({pool: jsPsych.data.getURLVariable("pool")});
+
+  // fall 2021
+  const debriefURL = "https://stanforduniversity.qualtrics.com/jfe/form/SV_e8xOz6GdThl4ASy?pid=" + 
+          jsPsych.data.getURLVariable("pid") + 
+          "&pool=" +
+          jsPsych.data.getURLVariable("pool") + 
+          "&s=" +
+          jsPsych.data.getURLVariable("s");
+          
 
   var traits;
   switch(jsPsych.data.getURLVariable("s")) {
     case "1":
-    traits = traits1
-    break;
+      traits = traits1
+      jsPsych.data.addProperties({traitSet: jsPsych.data.getURLVariable("traits1")});
+      break;
     case "2":
-    traits = traits2
-    break;
+      traits = traits2
+      jsPsych.data.addProperties({traitSet: jsPsych.data.getURLVariable("traits2")});
+      break;
     case "3":
-    traits = traits3
-    break;
+      traits = traits3
+      jsPsych.data.addProperties({traitSet: jsPsych.data.getURLVariable("traits3")});
+      break;
     default:
-    traits = traits1;
-    break;
+      traits = traits1;
+      jsPsych.data.addProperties({traitSet: jsPsych.data.getURLVariable("traits1-default")});
+      break;
         // throw 'traits not found';
       }
 
@@ -236,17 +249,11 @@
         show_progress_bar: true,
         auto_update_progress_bar: false,
         on_finish: function() {
-          var redirect_url = "https://stanforduniversity.qualtrics.com/jfe/form/SV_cXS7tvf2k71W1Ui?pid=" + 
-          jsPsych.data.getURLVariable("pid") + 
-          "&pool=" +
-          jsPsych.data.getURLVariable("pool") + 
-          "&s=" +
-          jsPsych.data.getURLVariable("s");
-          var message = "You will now be redirected to the next phase of the study.<br/>If you are not redirected, please click <a href='" + redirect_url + "'>this link</a> to continue.";
+          var message = "You will now be redirected to the next phase of the study.<br/>If you are not redirected, please click <a href='" + debriefURL + "'>this link</a> to continue.";
           var display_element = jsPsych.getDisplayElement();
           display_element.innerHTML = '<pre id="jspsych-redirect-display"></pre>';
           document.getElementById('jspsych-redirect-display').textContent = message;
-          window.location.replace(redirect_url)
+          window.location.replace(debriefURL)
           // jsPsych.data.displayData();
         }
       });
