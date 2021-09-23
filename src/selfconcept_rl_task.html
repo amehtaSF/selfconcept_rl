@@ -129,7 +129,7 @@
           jsPsych.data.getLastTimelineData().last(1).select("algoRating").values + 
           " out of " + 
           Math.max.apply(null, numberLikertScale) + " " + 
-          jsPsych.timelineVariable('word') + "</h2><br/><br/>";
+          jsPsych.timelineVariable('word') + "</h2><span style='font-size:60%'>(Press any key to continue)</span>";
         },
         // algoRating: getReasonableAlgoRating(parseInt(numberLikertScale[jsPsych.data.getLastTimelineData().last(1).select("response").values])),
         word: jsPsych.timelineVariable('word'),
